@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
+	"github.com/gin-gonic/contrib/static"
 	"github.com/jinzhu/gorm"
 	"log"
 )
@@ -29,7 +29,7 @@ type Post struct {
 }
 
 func main() {
-	dbstr := "vova:vova@tcp(127.0.0.1:3306)/beer?charset=utf8mb4&parseTime=True&loc=Local"
+	dbstr := "root:root@tcp(127.0.0.1:3309)/beer?charset=utf8mb4&parseTime=True&loc=Local"
 
 	db, err := gorm.Open("mysql", dbstr)
 	if err != nil {
@@ -41,9 +41,29 @@ func main() {
 	r.Use(cors.Default())
 
 	r.GET("/", Api)
+	r.GET("/brands", Brands)
+	r.Use(static.Serve("/img", static.LocalFile("./img", true)))
 	r.Run(":4444")
 
 }
+
+func Brands(c *gin.Context)  {
+	db := DBInstance(c)
+
+	type B struct{
+		Brand string `json:"brand"`
+		Nbr int `json:"nbr"`
+	}
+	var brands []B
+
+	query := "SELECT brand, count(brand) as nbr FROM beer.review1 group by brand order by count(brand) desc;"
+
+	db.Raw(query).Scan(&brands)
+
+	c.JSON(200, brands)
+}
+
+
 
 func Api(c *gin.Context)  {
 	db := DBInstance(c)

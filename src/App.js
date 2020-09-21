@@ -46,19 +46,51 @@ const useStyles = makeStyles((theme) => ({
     product: {}
 }));
 
-
 export default function App() {
-    const API_URL = `http://localhost:4444?`;
+    const API_URL = `http://localhost:4444`;
+    // const BRANDS_URL = `${API_URL}/brands`
+
     const [beers, setBeers] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [brandSelect, setBrandSelect] = useState('');
+
     const [brand, setBrand] = React.useState('');
     const [style, setStyle] = React.useState('');
     const [rating, setRating] = React.useState([7, 10]);
     const classes = useStyles();
 
+    useEffect(() => {
+        const loadBrands = async () => {
+            const brandsResponse = await fetch('http://localhost:4444/brands');
+            const newBrands = await brandsResponse.json();
+            if (newBrands.length !== brands.length){
+                setBrands(brands);
+                let bs = (<Select
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    value={brand}
+                    onChange={handleChangeBrand}
+                    label="Brand"
+                >
+                    <MenuItem value={""}>Все</MenuItem>
+                    <MenuItem value={"Мфкмфк"}>Мфкмф</MenuItem>
+                    {
+                        brands.map((brand, i) => (
+                            <MenuItem value={`${brand.brand}`}>{`${brand.brand}(${brand.nbr})`}</MenuItem>
+                        ))
+                    }
+                </Select>)
+                setBrandSelect(bs);
+
+            }
+
+        }
+        loadBrands();
+    },[brands, brandSelect]);
 
     useEffect(() => {
         const loadData = async () => {
-            let url = `${API_URL}&order=rating&order_dir=desc&limit=50`;
+            let url = `${API_URL}?&order=rating&order_dir=desc&limit=50`;
             if (brand) {
                 url = `${url}&brand=${brand}`
             }
@@ -75,7 +107,6 @@ export default function App() {
                 const newBeers = beers.map((elem, i) => {
                     return i % 3 ? [] : [beers.slice(i, i + 3)];
                 }).reduce((prev, acc) => prev.concat(acc), [])
-                console.log(newBeers)
                 setBeers(newBeers);
             }
         }
@@ -94,34 +125,14 @@ export default function App() {
         setStyle(event.target.value)
     }
 
+
+
     return (
         <Container className={classes.container}>
+
             <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="demo-simple-select-outlined-label">Brand</InputLabel>
-                <Select
-                    labelId="demo-simple-select-outlined-label"
-                    id="demo-simple-select-outlined"
-                    value={brand}
-                    onChange={handleChangeBrand}
-                    label="Brand"
-                >
-                    <MenuItem value={""}><em>Все</em></MenuItem>
-                    <MenuItem value="Varvar Brew">Varvar Brew</MenuItem>
-                    <MenuItem value={"SD Brewery"}>SD Brewery</MenuItem>
-                    <MenuItem value={"Rock Dog Brewery"}>Rock Dog Brewery</MenuItem>
-                    <MenuItem value={"Pravda Beer Theatre"}>Pravda Beer Theatre</MenuItem>
-                    <MenuItem value={"Cosmopolite"}>Cosmopolite</MenuItem>
-                    <MenuItem value={"Wychwood Brewery"}>Wychwood Brewery</MenuItem>
-                    <MenuItem value={"Brauhaus Riegele"}>Brauhaus Riegele</MenuItem>
-                    <MenuItem value={"Brewdog"}>Brewdog</MenuItem>
-                    <MenuItem value={"Ципа / Tsypa"}>Ципа / Tsypa</MenuItem>
-                    <MenuItem value={"Файне"}>Файне</MenuItem>
-                    <MenuItem value={"Полтавпиво"}>Полтавпиво</MenuItem>
-                    <MenuItem value={"Пивний Гном"}>Пивний Гном</MenuItem>
-                    <MenuItem value={"Volynski Browar"}>Volynski Browar</MenuItem>
-                    <MenuItem value={"Schneider Weisse"}>Schneider Weisse</MenuItem>
-                    <MenuItem value={"Saugatuck Brewing Company "}>Saugatuck Brewing Company </MenuItem>
-                </Select>
+                {brandSelect}
             </FormControl>
 
             <FormControl variant="outlined" className={classes.formControl}>
@@ -172,7 +183,7 @@ export default function App() {
                                 {/*        {value.brand}</span> - {value.product}*/}
                                 {/*</Typography>*/}
 
-                                <img src={value.src} className={classes.picture}/>
+                                <img src={`${API_URL}/img/${value.code}.jpg`} className={classes.picture}/>
                                 <Typography >{value.rating}</Typography>
                                 <Link href={`https://www.instagram.com/p/${value.code}/`} target="_blank"
                                       rel="noreferrer">Link</Link>
