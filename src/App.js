@@ -52,7 +52,6 @@ export default function App() {
 
     const [beers, setBeers] = useState([]);
     const [brands, setBrands] = useState([]);
-    const [brandSelect, setBrandSelect] = useState('');
 
     const [brand, setBrand] = React.useState('');
     const [style, setStyle] = React.useState('');
@@ -63,30 +62,10 @@ export default function App() {
         const loadBrands = async () => {
             const brandsResponse = await fetch('http://localhost:4444/brands');
             const newBrands = await brandsResponse.json();
-            if (newBrands.length !== brands.length){
-                setBrands(brands);
-                let bs = (<Select
-                    labelId="demo-simple-select-outlined-label"
-                    id="demo-simple-select-outlined"
-                    value={brand}
-                    onChange={handleChangeBrand}
-                    label="Brand"
-                >
-                    <MenuItem value={""}>Все</MenuItem>
-                    <MenuItem value={"Мфкмфк"}>Мфкмф</MenuItem>
-                    {
-                        brands.map((brand, i) => (
-                            <MenuItem value={`${brand.brand}`}>{`${brand.brand}(${brand.nbr})`}</MenuItem>
-                        ))
-                    }
-                </Select>)
-                setBrandSelect(bs);
-
-            }
-
+            setBrands(newBrands);
         }
         loadBrands();
-    },[brands, brandSelect]);
+    },[]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -132,7 +111,19 @@ export default function App() {
 
             <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="demo-simple-select-outlined-label">Brand</InputLabel>
-                {brandSelect}
+
+                <Select
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    value={brand}
+                    onChange={handleChangeBrand}
+                    label="Brand"
+                >
+                    <MenuItem value={""}><em>Все</em></MenuItem>
+                    {brands.map((brand) => (
+                        <MenuItem key={brand.brand} value={brand.brand}>{brand.brand} ({brand.nbr})</MenuItem>
+                    ))}
+                </Select>
             </FormControl>
 
             <FormControl variant="outlined" className={classes.formControl}>

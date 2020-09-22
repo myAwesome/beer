@@ -29,7 +29,7 @@ type Post struct {
 }
 
 func main() {
-	dbstr := "root:root@tcp(127.0.0.1:3309)/beer?charset=utf8mb4&parseTime=True&loc=Local"
+	dbstr := "vova:vova@tcp(127.0.0.1:3306)/beer?charset=utf8mb4&parseTime=True&loc=Local"
 
 	db, err := gorm.Open("mysql", dbstr)
 	if err != nil {
