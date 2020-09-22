@@ -29,7 +29,8 @@ type Post struct {
 }
 
 func main() {
-	dbstr := "vova:vova@tcp(127.0.0.1:3306)/beer?charset=utf8mb4&parseTime=True&loc=Local"
+	dbstr := "root:root@tcp(127.0.0.1:3309)/beer?charset=utf8mb4&parseTime=True&loc=Local"
+// 	dbstr := "vova:vova@tcp(127.0.0.1:3306)/beer?charset=utf8mb4&parseTime=True&loc=Local"
 
 	db, err := gorm.Open("mysql", dbstr)
 	if err != nil {
@@ -42,7 +43,7 @@ func main() {
 
 	r.GET("/", Api)
 	r.GET("/brands", Brands)
-	r.Use(static.Serve("/img", static.LocalFile("./img", true)))
+	r.Use(static.Serve("/th", static.LocalFile("./th", true)))
 	r.Run(":4444")
 
 }
@@ -73,7 +74,7 @@ func Api(c *gin.Context)  {
 	ratingTo, isRatingTo := c.GetQuery("ratingTo")
 
 	abvFrom, isAbvFrom := c.GetQuery("abvFrom")
-	abvTo, isAbvTo := c.GetQuery("abvFrom")
+	abvTo, isAbvTo := c.GetQuery("abvTo")
 
 	brand, isBrand := c.GetQuery("brand")
 	style, isStyle := c.GetQuery("style")

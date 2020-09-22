@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     picture: {
-        width: '100%',
-        height: '100%',
+        width: '320px',
+        height: '320px',
     },
     brand: {
         fontStyle: "italic",
@@ -50,12 +50,13 @@ export default function App() {
     const API_URL = `http://localhost:4444`;
     // const BRANDS_URL = `${API_URL}/brands`
 
-    const [beers, setBeers] = useState([]);
+    const [beers, setBeers]   = useState([]);
     const [brands, setBrands] = useState([]);
 
-    const [brand, setBrand] = React.useState('');
-    const [style, setStyle] = React.useState('');
-    const [rating, setRating] = React.useState([7, 10]);
+    const [brand, setBrand]   = React.useState('');
+    const [style, setStyle]   = React.useState('');
+    const [rating, setRating] = React.useState([9, 10]);
+    const [abv, setAbv]       = React.useState([3, 13]);
     const classes = useStyles();
 
     useEffect(() => {
@@ -78,7 +79,9 @@ export default function App() {
             }
             if(rating){
                 url = `${url}&ratingFrom=${rating[0]}&ratingTo=${rating[1]}`
-
+            }
+            if (abv){
+                url = `${url}&abvFrom=${abv[0]}&abvTo=${abv[1]}`
             }
             const response = await fetch(url);
             const beers = await response.json();
@@ -90,10 +93,14 @@ export default function App() {
             }
         }
         loadData();
-    }, [brand, style, rating]);
+    }, [brand, style, rating, abv]);
 
     const handleChangeRating = (event, newValue) => {
         setRating(newValue)
+    }
+
+    const handleChangeAbv = (event, newValue) => {
+        setAbv(newValue)
     }
 
     const handleChangeBrand = (event) => {
@@ -103,8 +110,6 @@ export default function App() {
     const handleChangeStyle = (event) => {
         setStyle(event.target.value)
     }
-
-
 
     return (
         <Container className={classes.container}>
@@ -125,7 +130,6 @@ export default function App() {
                     ))}
                 </Select>
             </FormControl>
-
             <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="demo-simple-select-outlined-label">Style</InputLabel>
                 <Select
@@ -152,16 +156,40 @@ export default function App() {
                     <MenuItem value={14}>Wild/Sour Beers</MenuItem>
                 </Select>
             </FormControl>
+<br/>
+<br/>
+            <Typography id="rank-slider" gutterBottom>
+                Rating
+            </Typography>
             <Slider
                 value={rating}
                 onChange={handleChangeRating}
-                aria-labelledby="range-slider"
+                // onChangeCommitted={handleChangeRating}
+                aria-labelledby="rank-slider"
                 valueLabelDisplay="auto"
-                label="Rating"
-
+                aria-label="Abv"
+                color = "secondary"
+                marks ={true}
                 step={0.5}
                 min={0}
                 max={10}
+            />
+
+            <Typography id="abv-slider" gutterBottom>
+                Abv
+            </Typography>
+            <Slider
+                value={abv}
+                // onChangeCommitted={handleChangeAbv}
+                onChange={handleChangeAbv}
+                aria-labelledby="abv-slider"
+                valueLabelDisplay="auto"
+                label="Rating"
+                marks ={true}
+
+                step={0.5}
+                min={3}
+                max={13}
             />
 
             <Grid container className={classes.root} direction="column">
@@ -169,15 +197,17 @@ export default function App() {
                     <Grid item container key={i} style={{marginBottom: 50}} alignItems="stretch" wrap="nowrap">
                         {subarray.map((value) => (
                             <Grid item className={classes.post}>
-                                {/*<Typography variant="h6" gutterBottom>*/}
-                                {/*    <span className={classes.brand}>*/}
-                                {/*        {value.brand}</span> - {value.product}*/}
-                                {/*</Typography>*/}
-
-                                <img src={`${API_URL}/img/${value.code}.jpg`} className={classes.picture}/>
-                                <Typography >{value.rating}</Typography>
                                 <Link href={`https://www.instagram.com/p/${value.code}/`} target="_blank"
-                                      rel="noreferrer">Link</Link>
+                                      rel="noreferrer">
+                                    <img src={`${API_URL}/img/${value.code}.jpg`} className={classes.picture}/>
+                                    <Typography variant="h6" gutterBottom>
+                                    <span className={classes.brand}>
+                                        {value.brand}</span> - {value.product}
+                                    </Typography>
+
+                                    <Typography >({value.rating} / 10) - abv:{value.abv_dbl}%</Typography>
+
+                                </Link>
 
                             </Grid>
                         ))}

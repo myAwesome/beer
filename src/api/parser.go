@@ -95,14 +95,46 @@ func loop()  {
 	var reviews []Review
 	_ = json.Unmarshal(dat, &reviews)
 
-	for i, r := range reviews{
+	for _, r := range reviews{
 		fmt.Println(" ")
 		fmt.Println(" ")
-		fmt.Println(" ")
+		fmt.Println(r.ThumbnailResources[3].Src)
 
-		fmt.Println(i, r.Code, r.Caption)
+
+		break;
 	}
 
+}
+
+func main(){
+	dat, _ := ioutil.ReadFile("ph.json")
+	var reviews []Review
+
+	_ = json.Unmarshal(dat, &reviews)
+
+	for i, r := range reviews{
+		fmt.Println(i, r.Code)
+
+		resp, err := http.Get(r.ThumbnailResources[3].Src)
+		if err != nil {
+			log.Panic(err)
+		}
+		defer resp.Body.Close()
+
+		// Keep an in memory copy.
+		myImage, err := jpeg.Decode(resp.Body)
+
+		if err != nil {
+			log.Panic(err)
+		}
+
+		f, err := os.Create("th/"+r.Code+".jpg")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+		_ = jpeg.Encode(f, myImage, nil)
+	}
 }
 
 func imgSaver()  {
