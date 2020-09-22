@@ -77,7 +77,7 @@ export default function App() {
             if (style) {
                 url = `${url}&style=${style}`
             }
-            if(rating){
+            if (rating){
                 url = `${url}&ratingFrom=${rating[0]}&ratingTo=${rating[1]}`
             }
             if (abv){
