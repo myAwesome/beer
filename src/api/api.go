@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/joho/godotenv"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,8 +31,17 @@ type Post struct {
 }
 
 func main() {
-	dbstr := "root:root@tcp(127.0.0.1:3309)/beer?charset=utf8mb4&parseTime=True&loc=Local"
-// 	dbstr := "vova:vova@tcp(127.0.0.1:3306)/beer?charset=utf8mb4&parseTime=True&loc=Local"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dbport := os.Getenv("DB_PORT")
+	dbuser := os.Getenv("DB_USER")
+	dbpass := os.Getenv("DB_PASS")
+	serverport := os.Getenv("SERVER_PORT")
+
+	dbstr := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/beer?charset=utf8mb4&parseTime=True&loc=Local", dbuser, dbpass, dbport )
+
 
 	db, err := gorm.Open("mysql", dbstr)
 	if err != nil {
@@ -44,7 +55,7 @@ func main() {
 	r.GET("/", Api)
 	r.GET("/brands", Brands)
 	r.Use(static.Serve("/th", static.LocalFile("./th", true)))
-	r.Run(":4444")
+	r.Run(":"+serverport)
 
 }
 

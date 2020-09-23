@@ -89,6 +89,7 @@ type Review struct {
 	NumLikes     int    `json:"numLikes"`
 }
 
+
 func loop()  {
 	fmt.Println("main...")
 	dat, _ := ioutil.ReadFile("ph.json")
@@ -106,7 +107,7 @@ func loop()  {
 
 }
 
-func main(){
+func thumbnailSaver(){
 	dat, _ := ioutil.ReadFile("ph.json")
 	var reviews []Review
 
