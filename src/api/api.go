@@ -7,27 +7,25 @@ import (
 	"os"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"log"
 )
 
 //id, caption, code, rating, product, brand, style, abv_dbl, description
 type Post struct {
-	Id string `json:"id"`
+	Id          string `json:"id"`
 	Description string `json:"description"`
-	Code string `json:"code"`
-	Src string `json:"src"`
-	Rating string `json:"rating"`
+	Code        string `json:"code"`
+	Src         string `json:"src"`
+	Rating      string `json:"rating"`
 
 	Product string `json:"product"`
-	Brand string `json:"brand"`
-	Style string `json:"style"`
-	AbvDbl string `json:"abv_dbl"`
+	Brand   string `json:"brand"`
+	Style   string `json:"style"`
+	AbvDbl  string `json:"abv_dbl"`
 	StyleQP string `json:"styleQP"`
-
-
 }
 
 func main() {
@@ -40,8 +38,7 @@ func main() {
 	dbpass := os.Getenv("DB_PASS")
 	serverport := os.Getenv("SERVER_PORT")
 
-	dbstr := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/beer?charset=utf8mb4&parseTime=True&loc=Local", dbuser, dbpass, dbport )
-
+	dbstr := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/beer?charset=utf8mb4&parseTime=True&loc=Local", dbuser, dbpass, dbport)
 
 	db, err := gorm.Open("mysql", dbstr)
 	if err != nil {
@@ -55,16 +52,17 @@ func main() {
 	r.GET("/", Api)
 	r.GET("/brands", Brands)
 	r.Use(static.Serve("/th", static.LocalFile("./th", true)))
-	r.Run(":"+serverport)
+	r.Use(static.Serve("/img", static.LocalFile("./img", true)))
+	r.Run(":" + serverport)
 
 }
 
-func Brands(c *gin.Context)  {
+func Brands(c *gin.Context) {
 	db := DBInstance(c)
 
-	type B struct{
+	type B struct {
 		Brand string `json:"brand"`
-		Nbr int `json:"nbr"`
+		Nbr   int    `json:"nbr"`
 	}
 	var brands []B
 
@@ -75,9 +73,7 @@ func Brands(c *gin.Context)  {
 	c.JSON(200, brands)
 }
 
-
-
-func Api(c *gin.Context)  {
+func Api(c *gin.Context) {
 	db := DBInstance(c)
 	var posts []Post
 
@@ -143,4 +139,3 @@ func SetDBtoContext(db *gorm.DB) gin.HandlerFunc {
 func DBInstance(c *gin.Context) *gorm.DB {
 	return c.MustGet("DB").(*gorm.DB)
 }
-

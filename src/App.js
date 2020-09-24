@@ -199,7 +199,7 @@ export default function App() {
                             <Grid item className={classes.post}>
                                 <Link href={`https://www.instagram.com/p/${value.code}/`} target="_blank"
                                       rel="noreferrer">
-                                    <img src={`${API_URL}/img/${value.code}.jpg`} className={classes.picture}/>
+                                    <img src={`${API_URL}/th/${value.code}.jpg`} className={classes.picture}/>
                                     <Typography variant="h6" gutterBottom>
                                     <span className={classes.brand}>
                                         {value.brand}</span> - {value.product}

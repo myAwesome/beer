@@ -89,31 +89,29 @@ type Review struct {
 	NumLikes     int    `json:"numLikes"`
 }
 
-
-func loop()  {
+func loop() {
 	fmt.Println("main...")
 	dat, _ := ioutil.ReadFile("ph.json")
 	var reviews []Review
 	_ = json.Unmarshal(dat, &reviews)
 
-	for _, r := range reviews{
+	for _, r := range reviews {
 		fmt.Println(" ")
 		fmt.Println(" ")
 		fmt.Println(r.ThumbnailResources[3].Src)
 
-
-		break;
+		break
 	}
 
 }
 
-func thumbnailSaver(){
+func thumbnailSaver() {
 	dat, _ := ioutil.ReadFile("ph.json")
 	var reviews []Review
 
 	_ = json.Unmarshal(dat, &reviews)
 
-	for i, r := range reviews{
+	for i, r := range reviews {
 		fmt.Println(i, r.Code)
 
 		resp, err := http.Get(r.ThumbnailResources[3].Src)
@@ -129,7 +127,7 @@ func thumbnailSaver(){
 			log.Panic(err)
 		}
 
-		f, err := os.Create("th/"+r.Code+".jpg")
+		f, err := os.Create("th/" + r.Code + ".jpg")
 		if err != nil {
 			panic(err)
 		}
@@ -138,7 +136,7 @@ func thumbnailSaver(){
 	}
 }
 
-func imgSaver()  {
+func imgSaver() {
 	fmt.Println("Starting...")
 
 	dat, _ := ioutil.ReadFile("ph.json")
@@ -146,7 +144,7 @@ func imgSaver()  {
 
 	_ = json.Unmarshal(dat, &reviews)
 
-	for i, r := range reviews{
+	for i, r := range reviews {
 		fmt.Println(i, r.Code)
 
 		resp, err := http.Get(r.Src)
@@ -162,7 +160,7 @@ func imgSaver()  {
 			log.Panic(err)
 		}
 
-		f, err := os.Create("img/"+r.Code+".jpg")
+		f, err := os.Create("img/" + r.Code + ".jpg")
 		if err != nil {
 			panic(err)
 		}
