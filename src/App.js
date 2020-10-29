@@ -3,7 +3,6 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import {makeStyles} from '@material-ui/core/styles';
 
 import InputLabel from '@material-ui/core/InputLabel';
@@ -11,6 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Review from "./components/review";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
     container:{
@@ -25,8 +26,6 @@ const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
     },
-
-
     post: {
         width: '100%',
         // width:'293px',
@@ -34,14 +33,6 @@ const useStyles = makeStyles((theme) => ({
         '&:not(:last-child)': {
             marginRight: 28,
         }
-    },
-    picture: {
-        width: '320px',
-        height: '320px',
-    },
-    brand: {
-        fontStyle: "italic",
-        color: "green"
     },
     product: {}
 }));
@@ -53,6 +44,7 @@ export default function App() {
     const [beers, setBeers]   = useState([]);
     const [brands, setBrands] = useState([]);
 
+    const [searchText, setSearchText]   = React.useState('');
     const [brand, setBrand]   = React.useState('');
     const [style, setStyle]   = React.useState('');
     const [rating, setRating] = React.useState([9, 10]);
@@ -83,6 +75,9 @@ export default function App() {
             if (abv){
                 url = `${url}&abvFrom=${abv[0]}&abvTo=${abv[1]}`
             }
+            if (searchText) {
+                url = `${url}&searchText=${searchText}`
+            }
             const response = await fetch(url);
             const beers = await response.json();
             if (beers && beers.length) {
@@ -93,7 +88,7 @@ export default function App() {
             }
         }
         loadData();
-    }, [brand, style, rating, abv]);
+    }, [brand, style, rating, abv, searchText]);
 
     const handleChangeRating = (event, newValue) => {
         setRating(newValue)
@@ -107,16 +102,18 @@ export default function App() {
         setBrand(event.target.value)
     }
 
+    const handleChangeSearch = (event) => {
+        setSearchText(event.target.value)
+    }
+
     const handleChangeStyle = (event) => {
         setStyle(event.target.value)
     }
 
     return (
         <Container className={classes.container}>
-
             <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="demo-simple-select-outlined-label">Brand</InputLabel>
-
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
@@ -156,6 +153,18 @@ export default function App() {
                     <MenuItem value={14}>Wild/Sour Beers</MenuItem>
                 </Select>
             </FormControl>
+
+            <FormControl variant="outlined" className={classes.formControl}>
+                <TextField
+                    id="outlined-secondary"
+                    label="Search"
+                    variant="outlined"
+                    color="secondary"
+                    value={searchText}
+                    onChange={handleChangeSearch}
+                />
+            </FormControl>
+
 <br/>
 <br/>
             <Typography id="rank-slider" gutterBottom>
@@ -191,24 +200,12 @@ export default function App() {
                 min={3}
                 max={13}
             />
-
             <Grid container className={classes.root} direction="column">
                 {beers.map((subarray, i) => (
                     <Grid item container key={i} style={{marginBottom: 50}} alignItems="stretch" wrap="nowrap">
                         {subarray.map((value) => (
                             <Grid item className={classes.post}>
-                                <Link href={`https://www.instagram.com/p/${value.code}/`} target="_blank"
-                                      rel="noreferrer">
-                                    <img src={`${API_URL}/th/${value.code}.jpg`} className={classes.picture}/>
-                                    <Typography variant="h6" gutterBottom>
-                                    <span className={classes.brand}>
-                                        {value.brand}</span> - {value.product}
-                                    </Typography>
-
-                                    <Typography >({value.rating} / 10) - abv:{value.abv_dbl}%</Typography>
-
-                                </Link>
-
+                                <Review data={value}/>
                             </Grid>
                         ))}
                     </Grid>

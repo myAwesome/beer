@@ -75,14 +75,18 @@ func Brands(c *gin.Context) {
 
 func Api(c *gin.Context) {
 	db := DBInstance(c)
+	//type ApiResponse struct {
+	//	Posts []Post `json:"posts"`
+	//	Count int `json:"count"`
+	//}
+
 	var posts []Post
 
+	searchText, isSearchText := c.GetQuery("searchText")
 	ratingFrom, isRatingFrom := c.GetQuery("ratingFrom")
 	ratingTo, isRatingTo := c.GetQuery("ratingTo")
-
 	abvFrom, isAbvFrom := c.GetQuery("abvFrom")
 	abvTo, isAbvTo := c.GetQuery("abvTo")
-
 	brand, isBrand := c.GetQuery("brand")
 	style, isStyle := c.GetQuery("style")
 
@@ -116,6 +120,10 @@ func Api(c *gin.Context) {
 		query = fmt.Sprintf("%s and styleQP = '%s' ", query, style)
 	}
 
+	if isSearchText {
+		query = fmt.Sprintf("%s and caption like '%s' ", query, "%"+searchText+"%")
+	}
+
 	if isOrder {
 		query = fmt.Sprintf("%s order by %s %s ", query, order, orderDirection)
 	}
@@ -126,6 +134,9 @@ func Api(c *gin.Context) {
 
 	db.Raw(query).Scan(&posts)
 
+	//var response ApiResponse
+	//response.Posts = posts
+	//response.Count = len(posts)
 	c.JSON(200, posts)
 }
 
